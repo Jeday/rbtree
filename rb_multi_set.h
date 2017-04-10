@@ -2,10 +2,12 @@
 #define RB_MULTI_SET_H
 
 #include <utility>
+#include <iterator>
 
-
-template<typename key_type,typename value_type >
+template<typename key_type>
 class multiset{
+
+    typedef key_type  value_type;
 
     /// color alias
      static const bool BLACK =false;
@@ -99,7 +101,7 @@ private:
 
 
      /// insert value as usual
-     void insert_value(pair_type v){
+     void insert_value(const key_type &v){
         node * n;
      node* r = root;
      if (r != _NLL)
@@ -108,7 +110,7 @@ private:
                  if(r->left != _NLL)
                      r = r->left;
                  else {
-                     r->left = new node (v,_NLL,_NLL,r);
+                     r->left = new node ({v,v},_NLL,_NLL,r);
                      n=r->left;
                      r = _NLL;
                  }
@@ -119,14 +121,16 @@ private:
                  if(r->right != _NLL)
                      r = r->right;
                  else {
-                     r->right = new node (v,_NLL,_NLL,r);
+                     r->right = new node ({v,v},_NLL,_NLL,r);
                      n =r->right;
                      r = _NLL;
                  }
 
              }
          }
-       else {root = new node (v,_NLL,_NLL,_NLL,BLACK);
+       else {root = new node ({v,v},_NLL,_NLL,_NLL,BLACK);
+             _NLL->left = root;
+             _NLL->right = root;
        return;
                  }
                  insert_case1(r);
@@ -461,29 +465,29 @@ private:
           }
       }
 
-      node *find(const pair_type  &  v, node * r = nullptr) const  {
+      node *find_node(const value_type  &  v, node * r = nullptr) const  {
           if(r == nullptr)
               r = root;
           while(r != _NLL){
-              if(less_than(r->data,v)){
+              if(r->data.first < v){
                   r = r->right;
               }
               else {
                   r = r->left;
               }
-              else return r;
+               return r;
           }
           return _NLL;
       }
 
-      bool delete_value(const pair_type  &  v){
-          node * r = find(v);
+      iterator::difference_type delete_value(key_type&  v){
+          node * r = find_node(v);
           if (r != _NLL){
               delete_one_child(r);
-              return delete_value(v);
+              return 1+delete_value(v);
           }
           else
-          {return false;}
+          {return 0;}
       }
 
 public:
@@ -500,9 +504,12 @@ public:
               iterator(node * ptr) : ptr_(ptr) { }
               self_type operator++() { self_type i = *this; ptr_ = next(ptr_); return i; }
               self_type operator++(int junk) { ptr_=next(ptr_); return *this; }
-              self_type operator--() { self_type i = *this; ptr_=prev(ptr); return i; }
-              self_type operator--(int junk) { ptr_=prev(ptr); return *this; }
+              self_type operator--() { self_type i = *this; ptr_=prev(ptr_); return i; }
+              self_type operator--(int junk) { ptr_=prev(ptr_); return *this; }
               reference operator*() { return ptr_->data; }
+              self_type operator+(difference_type c){
+                  self_type it = *this;
+                  for(difference_type i = 0; i<c;++i ) ++it; return it; }
               //pointer operator->() { return ptr_; }
               bool operator==(const self_type& rhs) { return ptr_ == rhs.ptr_; }
               bool operator!=(const self_type& rhs) { return ptr_ != rhs.ptr_; }
@@ -522,9 +529,12 @@ public:
               const_iterator(node * ptr) : ptr_(ptr) { }
               self_type operator++() { self_type i = *this; ptr_ = next(ptr_); return i; }
               self_type operator++(int junk) { ptr_=next(ptr_); return *this; }
-              self_type operator--() { self_type i = *this; ptr_=prev(ptr); return i; }
-              self_type operator--(int junk) { ptr_=prev(ptr); return *this; }
+              self_type operator--() { self_type i = *this; ptr_=prev(ptr_); return i; }
+              self_type operator--(int junk) { ptr_=prev(ptr_); return *this; }
               const reference operator*() { return ptr_->data; }
+              self_type operator+(difference_type c){
+                  self_type it = *this;
+                  for(difference_type i = 0; i<c;++i ) ++it; return it; }
               //const pointer operator->() { return ptr_; }
               bool operator==(const self_type& rhs) { return ptr_ == rhs.ptr_; }
               bool operator!=(const self_type& rhs) { return ptr_ != rhs.ptr_; }
@@ -557,6 +567,95 @@ public:
               {
                   return const_iterator(_NLL);
               }
+
+
+              iterator lower_bound(key_type v){
+                  node * r = root;
+                  node * f = find_node({v,v});
+                  if (f != _NLL)
+                     return iterator(f);
+                  else {
+                         if (r == _NLL)
+                             return iterator(r);
+                         while(r!= _NLL){
+                                 if (v <r->data.first){
+                                    if (r->left != _NLL)
+                                        r = r->left;
+                                     else
+                                        return iterator(r);
+                                     }
+                                 else {
+                                         if (r->right != _NLL)
+                                             r = r->right;
+                                          else
+                                             return iterator(r);
+
+                                     }
+
+                             }
+
+                      }
+              }
+
+              iterator upper_bound(key_type v){
+                  node * r = root;
+                  node * f = find_node({v,v});
+                  if (f != _NLL){
+                          while(f->data.first == v)
+                              f = next(f);
+                          return f;
+                      }
+                  else {
+                          if (r == _NLL)
+                              return iterator(r);
+                          while(r!= _NLL){
+                                  if (v <r->data.first){
+                                     if (r->left != _NLL)
+                                         r = r->left;
+                                      else
+                                         return iterator(next(r));
+                                      }
+                                  else {
+                                          if (r->right != _NLL)
+                                              r = r->right;
+                                           else
+                                              return iterator(next(r));
+
+                                      }
+
+                              }
+
+
+                      }
+              }
+
+              void insert(const key_type& v){
+                  insert_value(v);
+              }
+
+              iterator find(const key_type&v) const{
+                  return iterator(find_node(v,nullptr));
+              }
+
+              iterator::difference_type count(const key_type&v) const {
+                  iterator it = find(v);
+                  iterator::difference_type c = 0;
+                  while(it != this->end()){
+                      ++c;
+                      iterator t = it+1;
+                      if(t == _NLL || *t != *it)
+                          return c;
+                      }
+                  return c; // c is 0;
+
+              }
+
+              void erase(const key_type& v){
+                  return delete_value(v);
+              }
+
+
+
 };
 
 
