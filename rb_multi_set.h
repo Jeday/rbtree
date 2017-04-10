@@ -480,15 +480,8 @@ private:
           return _NLL;
       }
 
-      iterator::difference_type delete_value(key_type&  v){
-          node * r = find_node(v);
-          if (r != _NLL){
-              delete_one_child(r);
-              return 1+delete_value(v);
-          }
-          else
-          {return 0;}
-      }
+
+
 
 public:
 
@@ -541,6 +534,21 @@ public:
           private:
              node *  ptr_;
       };
+
+
+private:
+
+      size_t delete_value(key_type&  v){
+          node * r = find_node(v);
+          if (r != _NLL){
+              delete_one_child(r);
+              return 1+delete_value(v);
+          }
+          else
+          {return 0;}
+      }
+
+public:
 
       iterator begin()
               {
@@ -637,9 +645,9 @@ public:
                   return iterator(find_node(v,nullptr));
               }
 
-              iterator::difference_type count(const key_type&v) const {
+              size_t count(const key_type&v) const {
                   iterator it = find(v);
-                  iterator::difference_type c = 0;
+                  size_t c = 0;
                   while(it != this->end()){
                       ++c;
                       iterator t = it+1;
@@ -650,7 +658,7 @@ public:
 
               }
 
-              iterator::difference_type erase(const key_type& v){
+              size_t erase(const key_type& v){
                   return delete_value(v);
               }
 
