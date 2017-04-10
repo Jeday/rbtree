@@ -650,8 +650,12 @@ public:
 
               }
 
-              void erase(const key_type& v){
+              iterator::difference_type erase(const key_type& v){
                   return delete_value(v);
+              }
+
+              bool empty() const {
+                  return this->begin() == this->end();
               }
 
 
