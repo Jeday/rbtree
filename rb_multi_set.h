@@ -10,14 +10,14 @@ class multiset{
     typedef key_type  value_type;
 
     /// color alias
-     static const bool BLACK =false;
-     static const bool RED = true;
+      //const bool BLACK = false;
+    //  const bool RED = true;
 
     class node;
 
     using pair_type = std::pair<key_type,value_type>;
 
-    /// _NLL black leaf
+    /// _NLL false leaf
     node * _NLL;
 
     /// root node of rbtree
@@ -33,7 +33,7 @@ class multiset{
         node * parent;
         bool color;
 
-        node(pair_type _data,node * _left = nullptr, node * _right = nullptr,node * _parent = nullptr, bool _color = BLACK):
+        node(pair_type _data,node * _left = nullptr, node * _right = nullptr,node * _parent = nullptr, bool _color = false):
             data(_data),
             left(_left),
            right(_right),
@@ -41,12 +41,12 @@ class multiset{
             parent(_parent)
        {}
 
-        /// _NLL constructor of BLACK leaf with uninit data
+        /// _NLL constructor of false leaf with uninit data
         node(node * p):
             left(nullptr),
             right(nullptr),
             parent(p),
-            color(BLACK)
+            color(false)
        {}
 
 
@@ -106,11 +106,11 @@ private:
      node* r = root;
      if (r != _NLL)
          while(r != _NLL){
-             if (less_than(v,r->data)){
+             if (v<r->data.first){
                  if(r->left != _NLL)
                      r = r->left;
                  else {
-                     r->left = new node ({v,v},_NLL,_NLL,r);
+                     r->left = new node ({v,v},_NLL,_NLL,r,true);
                      n=r->left;
                      r = _NLL;
                  }
@@ -121,19 +121,21 @@ private:
                  if(r->right != _NLL)
                      r = r->right;
                  else {
-                     r->right = new node ({v,v},_NLL,_NLL,r);
+                     r->right = new node ({v,v},_NLL,_NLL,r,true);
                      n =r->right;
                      r = _NLL;
                  }
 
              }
          }
-       else {root = new node ({v,v},_NLL,_NLL,_NLL,BLACK);
+       else {
+                root = new node ({v,v},_NLL,_NLL,_NLL,true);
              _NLL->left = root;
              _NLL->right = root;
-       return;
+            n = root;
+
                  }
-                 insert_case1(r);
+                 insert_case1(n);
      }
 
 
@@ -189,14 +191,14 @@ private:
       void insert_case1(node  *n)
       {
        if (n->parent == _NLL)
-        n->color = BLACK;
+        n->color = false;
        else
         insert_case2(n);
       }
 
       void insert_case2( node *n)
       {
-          if (n->parent->color == BLACK)
+          if (n->parent->color == false)
               return; /* Tree is still valid */
           else
               insert_case3(n);
@@ -206,11 +208,11 @@ private:
       {
            node *u = uncle(n), *g;
 
-          if ((u != _NLL) && (u->color == RED) && (n->parent->color == RED)) {
-              n->parent->color = BLACK;
-              u->color = BLACK;
+          if ((u != _NLL) && (u->color == true) && (n->parent->color == true)) {
+              n->parent->color = false;
+              u->color = false;
               g = grandparent(n);
-              g->color = RED;
+              g->color = true;
               insert_case1(g);
           } else {
               insert_case4(n);
@@ -235,8 +237,8 @@ private:
       {
            node *g = grandparent(n);
 
-          n->parent->color = BLACK;
-          g->color = RED;
+          n->parent->color = false;
+          g->color = true;
           if ((n == n->parent->left) && (n->parent == g->left)) {
               rotate_right(g);
           } else {
@@ -365,9 +367,9 @@ private:
                child = n->right;
                swap_right(n);
            }
-          if (n->color == BLACK) {
-              if (child->color == RED)
-                  child->color = BLACK;
+          if (n->color == false) {
+              if (child->color == true)
+                  child->color = false;
               else
                   delete_case1(child);
           }
@@ -384,9 +386,9 @@ private:
       {
            node *s = sibling(n);
 
-          if (s->color == RED) {
-              n->parent->color = RED;
-              s->color = BLACK;
+          if (s->color == true) {
+              n->parent->color = true;
+              s->color = false;
               if (n == n->parent->left)
                   rotate_left(n->parent);
               else
@@ -399,11 +401,11 @@ private:
       {
            node *s = sibling(n);
 
-          if ((n->parent->color == BLACK) &&
-              (s->color == BLACK) &&
-              (s->left->color == BLACK) &&
-              (s->right->color == BLACK)) {
-              s->color = RED;
+          if ((n->parent->color == false) &&
+              (s->color == false) &&
+              (s->left->color == false) &&
+              (s->right->color == false)) {
+              s->color = true;
               delete_case1(n->parent);
           } else
               delete_case4(n);
@@ -413,12 +415,12 @@ private:
       {
            node *s = sibling(n);
 
-          if ((n->parent->color == RED) &&
-              (s->color == BLACK) &&
-              (s->left->color == BLACK) &&
-              (s->right->color == BLACK)) {
-              s->color = RED;
-              n->parent->color = BLACK;
+          if ((n->parent->color == true) &&
+              (s->color == false) &&
+              (s->left->color == false) &&
+              (s->right->color == false)) {
+              s->color = true;
+              n->parent->color = false;
           } else
               delete_case5(n);
       }
@@ -427,22 +429,22 @@ private:
       {
            node *s = sibling(n);
 
-          if  (s->color == BLACK) { /* this if statement is trivial,
+          if  (s->color == false) { /* this if statement is trivial,
       due to case 2 (even though case 2 changed the sibling to a sibling's child,
-      the sibling's child can't be red, since no red parent can have a red child). */
-      /* the following statements just force the red to be on the left of the left of the parent,
+      the sibling's child can't be true, since no true parent can have a true child). */
+      /* the following statements just force the true to be on the left of the left of the parent,
          or right of the right, so case six will rotate correctly. */
               if ((n == n->parent->left) &&
-                  (s->right->color == BLACK) &&
-                  (s->left->color == RED)) { /* this last test is trivial too due to cases 2-4. */
-                  s->color = RED;
-                  s->left->color = BLACK;
+                  (s->right->color == false) &&
+                  (s->left->color == true)) { /* this last test is trivial too due to cases 2-4. */
+                  s->color = true;
+                  s->left->color = false;
                   rotate_right(s);
               } else if ((n == n->parent->right) &&
-                         (s->left->color == BLACK) &&
-                         (s->right->color == RED)) {/* this last test is trivial too due to cases 2-4. */
-                  s->color = RED;
-                  s->right->color = BLACK;
+                         (s->left->color == false) &&
+                         (s->right->color == true)) {/* this last test is trivial too due to cases 2-4. */
+                  s->color = true;
+                  s->right->color = false;
                   rotate_left(s);
               }
           }
@@ -454,13 +456,13 @@ private:
            node *s = sibling(n);
 
           s->color = n->parent->color;
-              n->parent->color = BLACK;
+              n->parent->color = false;
 
           if (n == n->parent->left) {
-                      s->right->color = BLACK;
+                      s->right->color = false;
               rotate_left(n->parent);
           } else {
-              s->left->color = BLACK;
+              s->left->color = false;
               rotate_right(n->parent);
           }
       }
@@ -494,12 +496,12 @@ public:
               typedef std::bidirectional_iterator_tag iterator_category;
               typedef size_t difference_type;
 
-              iterator(node * ptr) : ptr_(ptr) { }
-              self_type operator++() { self_type i = *this; ptr_ = next(ptr_); return i; }
-              self_type operator++(int junk) { ptr_=next(ptr_); return *this; }
-              self_type operator--() { self_type i = *this; ptr_=prev(ptr_); return i; }
-              self_type operator--(int junk) { ptr_=prev(ptr_); return *this; }
-              reference operator*() { return ptr_->data; }
+              iterator(node * ptr,multiset<key_type> * f) : ptr_(ptr), father(f) { }
+              self_type operator++() { self_type i = *this; ptr_ = father->next(ptr_); return i; }
+              self_type operator++(int junk) { ptr_=father->next(ptr_); return *this; }
+              self_type operator--() { self_type i = *this; ptr_=father->prev(ptr_); return i; }
+              self_type operator--(int junk) { ptr_=father->prev(ptr_); return *this; }
+              const key_type& operator*() { return ptr_->data.first; }
               self_type operator+(difference_type c){
                   self_type it = *this;
                   for(difference_type i = 0; i<c;++i ) ++it; return it; }
@@ -507,6 +509,7 @@ public:
               bool operator==(const self_type& rhs) { return ptr_ == rhs.ptr_; }
               bool operator!=(const self_type& rhs) { return ptr_ != rhs.ptr_; }
           private:
+             multiset<key_type> * father;
              node *  ptr_;
       };
 
@@ -519,12 +522,12 @@ public:
               typedef std::bidirectional_iterator_tag iterator_category;
               typedef size_t difference_type;
 
-              const_iterator(node * ptr) : ptr_(ptr) { }
-              self_type operator++() { self_type i = *this; ptr_ = next(ptr_); return i; }
-              self_type operator++(int junk) { ptr_=next(ptr_); return *this; }
-              self_type operator--() { self_type i = *this; ptr_=prev(ptr_); return i; }
-              self_type operator--(int junk) { ptr_=prev(ptr_); return *this; }
-              const reference operator*() { return ptr_->data; }
+              const_iterator(node * ptr,multiset<key_type> * f) : ptr_(ptr), father(f) { }
+              self_type operator++() { self_type i = *this; ptr_ = father->next(ptr_); return i; }
+              self_type operator++(int junk) { ptr_=father->next(ptr_); return *this; }
+              self_type operator--() { self_type i = *this; ptr_=father->prev(ptr_); return i; }
+              self_type operator--(int junk) { ptr_=father->prev(ptr_); return *this; }
+              const key_type operator*() { return ptr_->data.first; }
               self_type operator+(difference_type c){
                   self_type it = *this;
                   for(difference_type i = 0; i<c;++i ) ++it; return it; }
@@ -533,6 +536,7 @@ public:
               bool operator!=(const self_type& rhs) { return ptr_ != rhs.ptr_; }
           private:
              node *  ptr_;
+             multiset<key_type> * father;
       };
 
 
@@ -553,27 +557,27 @@ public:
       iterator begin()
               {
                   auto r = root;
-                  while(r->left)
+                  while(r->left != _NLL)
                       r = r->left;
-                  return iterator(r);
+                  return iterator(r,this);
               }
 
               iterator end()
               {
-                  return iterator(_NLL);
+                  return iterator(_NLL,this);
               }
 
               const_iterator cbegin() const
               {
                   auto r = root;
-                  while(r->left)
+                  while(r->left != _NLL)
                       r = r->left;
-                  return const_iterator(r);
+                  return const_iterator(r,this);
               }
 
               const_iterator cend() const
               {
-                  return const_iterator(_NLL);
+                  return const_iterator(_NLL,this);
               }
 
 
@@ -663,9 +667,20 @@ public:
               }
 
               bool empty() const {
-                  return this->begin() == this->end();
+                  return cbegin() == cend();
               }
 
+              bool empty(){
+                  return begin() == end();
+              }
+
+
+              void clear() {
+                  while(!empty()){
+                      key_type t = *begin();
+                      delete_value(t);
+                    }
+              }
 
 
 };
