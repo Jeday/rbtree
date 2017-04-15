@@ -15,7 +15,7 @@ class multiset{
 
     class node;
 
-    using pair_type = std::pair<key_type,value_type>;
+   // using pair_type = std::pair<key_type,value_type>;
 
     /// _NLL false leaf
     node * _NLL;
@@ -27,13 +27,13 @@ class multiset{
     */
     class node{
     public:
-        pair_type data;
+        key_type data;
         node * left;
         node * right;
         node * parent;
         bool color;
 
-        node(pair_type _data,node * _left = nullptr, node * _right = nullptr,node * _parent = nullptr, bool _color = false):
+        node(key_type _data,node * _left = nullptr, node * _right = nullptr,node * _parent = nullptr, bool _color = false):
             data(_data),
             left(_left),
            right(_right),
@@ -106,11 +106,11 @@ private:
      node* r = root;
      if (r != _NLL)
          while(r != _NLL){
-             if (v<r->data.first){
+             if (v<r->data){
                  if(r->left != _NLL)
                      r = r->left;
                  else {
-                     r->left = new node ({v,v},_NLL,_NLL,r,true);
+                     r->left = new node (v,_NLL,_NLL,r,true);
                      n=r->left;
                      r = _NLL;
                  }
@@ -121,7 +121,7 @@ private:
                  if(r->right != _NLL)
                      r = r->right;
                  else {
-                     r->right = new node ({v,v},_NLL,_NLL,r,true);
+                     r->right = new node (v,_NLL,_NLL,r,true);
                      n =r->right;
                      r = _NLL;
                  }
@@ -129,7 +129,7 @@ private:
              }
          }
        else {
-                root = new node ({v,v},_NLL,_NLL,_NLL,true);
+                root = new node (v,_NLL,_NLL,_NLL,true);
              _NLL->left = root;
              _NLL->right = root;
             n = root;
@@ -184,9 +184,6 @@ private:
           pivot->right = n;
       }
 
-      bool less_than(const pair_type & f,const pair_type & s){
-          return (f.first<s.first);
-      }
 
       void insert_case1(node  *n)
       {
@@ -471,7 +468,7 @@ private:
           if(r == nullptr)
               r = root;
           while(r != _NLL){
-              if(r->data.first < v){
+              if(r->data< v){
                   r = r->right;
               }
               else {
@@ -501,7 +498,7 @@ public:
               self_type operator++(int junk) { ptr_=father->next(ptr_); return *this; }
               self_type operator--() { self_type i = *this; ptr_=father->prev(ptr_); return i; }
               self_type operator--(int junk) { ptr_=father->prev(ptr_); return *this; }
-              const key_type& operator*() { return ptr_->data.first; }
+              key_type operator*() { return ptr_->data; }
               self_type operator+(difference_type c){
                   self_type it = *this;
                   for(difference_type i = 0; i<c;++i ) ++it; return it; }
@@ -527,7 +524,7 @@ public:
               self_type operator++(int junk) { ptr_=father->next(ptr_); return *this; }
               self_type operator--() { self_type i = *this; ptr_=father->prev(ptr_); return i; }
               self_type operator--(int junk) { ptr_=father->prev(ptr_); return *this; }
-              const key_type operator*() { return ptr_->data.first; }
+              const key_type& operator*() { return ptr_->data ; }
               self_type operator+(difference_type c){
                   self_type it = *this;
                   for(difference_type i = 0; i<c;++i ) ++it; return it; }
@@ -590,7 +587,7 @@ public:
                          if (r == _NLL)
                              return iterator(r);
                          while(r!= _NLL){
-                                 if (v <r->data.first){
+                                 if (v <r->data){
                                     if (r->left != _NLL)
                                         r = r->left;
                                      else
@@ -613,7 +610,7 @@ public:
                   node * r = root;
                   node * f = find_node({v,v});
                   if (f != _NLL){
-                          while(f->data.first == v)
+                          while(f->data == v)
                               f = next(f);
                           return f;
                       }
@@ -621,7 +618,7 @@ public:
                           if (r == _NLL)
                               return iterator(r);
                           while(r!= _NLL){
-                                  if (v <r->data.first){
+                                  if (v <r->data){
                                      if (r->left != _NLL)
                                          r = r->left;
                                       else
@@ -680,6 +677,12 @@ public:
                       key_type t = *begin();
                       delete_value(t);
                     }
+              }
+
+
+              ~multiset(){
+                  clear();
+                  delete _NLL;
               }
 
 
