@@ -685,6 +685,22 @@ public:
                   delete _NLL;
               }
 
+              multiset(const multiset<key_type> & m):multiset(){
+                  auto it =m.cbegin();
+                  while(it != m.cend())
+                    this->insert(*it);
+              }
+
+              operator=(multiset<key_type> m){
+                  this->clear();
+                  delete _NLL;
+                  _NLL  = nullptr;
+                  root  = nullptr;
+                  std::swap(_NLL,m._NLL);
+                  std::swap(root,m.root);
+              }
+
+
 
 };
 
