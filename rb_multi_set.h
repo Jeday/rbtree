@@ -6,7 +6,7 @@
 
 template<typename key_type>
 class multiset{
-
+protected:
     typedef key_type  value_type;
 
     /// color alias
@@ -64,7 +64,7 @@ public:
 
     }
 
-private:
+protected:
 
      node *grandparent(node *n) const
     {
@@ -101,7 +101,7 @@ private:
 
 
      /// insert value as usual
-     void insert_value(const key_type &v){
+     virtual void insert_value(const key_type &v){
         node * n;
      node* r = root;
      if (r != _NLL)
@@ -139,7 +139,7 @@ private:
      }
 
 
-      void rotate_left( node *n)
+      virtual  void rotate_left( node *n)
       {
            node *pivot = n->right;
 
@@ -162,7 +162,7 @@ private:
           pivot->left = n;
       }
 
-      void rotate_right( node *n)
+      virtual  void rotate_right( node *n)
       {
            node *pivot = n->left;
 
@@ -700,9 +700,55 @@ public:
                   std::swap(root,m.root);
               }
 
+              operator==(const multiset<key_type> & m){
+                  return root == m.root;
+              }
+
+              operator!=(const multiset<key_type> & m){
+                  return ! (*this==m);
+              }
+
+
 
 
 };
+
+template<typename key_type>
+class deb_multiset: public multiset {
+protected:
+    int rotate_left_cnt;
+    int rotate_right_cnt;
+
+
+
+    virtual void rotate_left(node * n){
+        multiset::rotate_left(n);
+        ++rotate_left_cnt;
+    }
+
+    virtual void rotate_right(node * n){
+        multiset::rotate_right(n);
+        ++rotate_right_cnt;
+    }
+
+public:
+
+    deb_multiset(): multiset() {
+        rotate_left_cnt = 0;
+        rotate_right_cnt = 0;
+    }
+
+    int left_rotations(){ return rotate_left_cnt;}
+
+    int right_rotations(){ return rotate_right_cnt;}
+
+    void reset_rotations(){
+        rotate_left_cnt = 0;
+        rotate_right_cnt = 0;
+    }
+
+
+    };
 
 
 
