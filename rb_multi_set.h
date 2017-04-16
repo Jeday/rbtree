@@ -469,12 +469,15 @@ protected:
               r = root;
           while(r != _NLL){
               if(r->data< v){
+                  if (r->right != _NLL)
                   r = r->right;
+                  else return r;
               }
               else {
+                 if (r->left != _NLL)
                   r = r->left;
+                 else return r;
               }
-               return r;
           }
           return _NLL;
       }
@@ -488,7 +491,7 @@ public:
       {
           public:
               typedef iterator self_type;
-              typedef pair_type& reference;
+              typedef key_type& reference;
               typedef node* pointer;
               typedef std::bidirectional_iterator_tag iterator_category;
               typedef size_t difference_type;
@@ -514,7 +517,7 @@ public:
       {
           public:
               typedef const_iterator self_type;
-              typedef pair_type& reference;
+              typedef key_type& reference;
               typedef node* pointer;
               typedef std::bidirectional_iterator_tag iterator_category;
               typedef size_t difference_type;
@@ -691,7 +694,7 @@ public:
                     this->insert(*it);
               }
 
-              operator=(multiset<key_type> m){
+              void operator=(multiset<key_type> m){
                   this->clear();
                   delete _NLL;
                   _NLL  = nullptr;
@@ -700,11 +703,11 @@ public:
                   std::swap(root,m.root);
               }
 
-              operator==(const multiset<key_type> & m){
+              bool operator==(const multiset<key_type> & m){
                   return root == m.root;
               }
 
-              operator!=(const multiset<key_type> & m){
+              bool operator!=(const multiset<key_type> & m){
                   return ! (*this==m);
               }
 
@@ -714,26 +717,26 @@ public:
 };
 
 template<typename key_type>
-class deb_multiset: public multiset {
+class deb_multiset: public multiset<key_type> {
 protected:
     int rotate_left_cnt;
     int rotate_right_cnt;
 
+    using nd = typename multiset<key_type>::node;
 
-
-    virtual void rotate_left(node * n){
-        multiset::rotate_left(n);
+    virtual void rotate_left(nd * n){
+        multiset<key_type>::rotate_left(n);
         ++rotate_left_cnt;
     }
 
-    virtual void rotate_right(node * n){
-        multiset::rotate_right(n);
+    virtual void rotate_right(nd * n){
+        multiset<key_type>::rotate_right(n);
         ++rotate_right_cnt;
     }
 
 public:
 
-    deb_multiset(): multiset() {
+    deb_multiset(): multiset<key_type>() {
         rotate_left_cnt = 0;
         rotate_right_cnt = 0;
     }
