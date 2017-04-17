@@ -27,5 +27,6 @@ void time_test(int cnt){
 
    std::cout<<"Time test for "<<cnt<<" insertions of rand int"<<std::endl;
    std::cout<<"Set :"<<res<<" sec."<<'\n'<<"Multiset : "<<mt_res<<" sec. with "<< mst.left_rotations()+mst.right_rotations()<<" rotations"<<std::endl;
+
 }
 

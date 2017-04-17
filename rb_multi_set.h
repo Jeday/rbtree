@@ -1,8 +1,11 @@
 #ifndef RB_MULTI_SET_H
 #define RB_MULTI_SET_H
 
-#include <utility>
-#include <iterator>
+#include <utility> // swap
+#include <iterator> // iterator traits
+#include <ostream> // for stream writting
+#include <string> // for delim
+
 
 template<typename key_type>
 class multiset{
@@ -138,7 +141,7 @@ protected:
                  insert_case1(n);
      }
 
-
+       /// virtual for counting in child class
       virtual  void rotate_left( node *n)
       {
            node *pivot = n->right;
@@ -161,7 +164,7 @@ protected:
           n->parent = pivot;
           pivot->left = n;
       }
-
+       /// *same*
       virtual  void rotate_right( node *n)
       {
            node *pivot = n->left;
@@ -244,6 +247,7 @@ protected:
       }
 
 
+      /// same from BST task
       node * next(node * r ) const {
 
             if(r->parent!= _NLL && r->parent->left == r)
@@ -323,12 +327,14 @@ protected:
 
       }
 
+      /// update _NLL with new root
       void set_root(node * r){
           _NLL->left = r;
           _NLL->right =r;
           root = r;
       }
 
+      /// free node of data and delete
       void free(node * r){
           if(r->parent !=_NLL){
               if(r->parent->left =r)
@@ -339,6 +345,7 @@ protected:
           delete r;
 
       }
+
 
       bool swap_right(node*  t){
           std::swap(t->right,t->left);
@@ -464,6 +471,7 @@ protected:
           }
       }
 
+
       node *find_node(const value_type  &  v, node * r = nullptr) const  {
           if(r == nullptr)
               r = root;
@@ -508,37 +516,42 @@ public:
               //pointer operator->() { return ptr_; }
               bool operator==(const self_type& rhs) { return ptr_ == rhs.ptr_; }
               bool operator!=(const self_type& rhs) { return ptr_ != rhs.ptr_; }
-          private:
+          protected:
              multiset<key_type> * father;
              node *  ptr_;
       };
 
-      class const_iterator
-      {
-          public:
-              typedef const_iterator self_type;
-              typedef key_type& reference;
-              typedef node* pointer;
-              typedef std::bidirectional_iterator_tag iterator_category;
-              typedef size_t difference_type;
+      //      class const_iterator
+      //      {
+      //          public:
+      //              typedef const_iterator self_type;
+      //              typedef key_type& reference;
+      //              typedef node* pointer;
+      //              typedef std::bidirectional_iterator_tag iterator_category;
+      //              typedef size_t difference_type;
 
-              const_iterator(node * ptr,multiset<key_type> * f) : ptr_(ptr), father(f) { }
-              self_type operator++() { self_type i = *this; ptr_ = father->next(ptr_); return i; }
-              self_type operator++(int junk) { ptr_=father->next(ptr_); return *this; }
-              self_type operator--() { self_type i = *this; ptr_=father->prev(ptr_); return i; }
-              self_type operator--(int junk) { ptr_=father->prev(ptr_); return *this; }
-              const key_type& operator*() { return ptr_->data ; }
-              self_type operator+(difference_type c){
-                  self_type it = *this;
-                  for(difference_type i = 0; i<c;++i ) ++it; return it; }
-              //const pointer operator->() { return ptr_; }
-              bool operator==(const self_type& rhs) { return ptr_ == rhs.ptr_; }
-              bool operator!=(const self_type& rhs) { return ptr_ != rhs.ptr_; }
-          private:
-             node *  ptr_;
-             multiset<key_type> * father;
-      };
+      //              const_iterator(node * ptr,multiset<key_type> * f) : ptr_(ptr), father(f) { }
+      //              self_type operator++() { self_type i = *this; ptr_ = father->next(ptr_); return i; }
+      //              self_type operator++(int junk) { ptr_=father->next(ptr_); return *this; }
+      //              self_type operator--() { self_type i = *this; ptr_=father->prev(ptr_); return i; }
+      //              self_type operator--(int junk) { ptr_=father->prev(ptr_); return *this; }
+      //              const key_type& operator*() { return ptr_->data ; }
+      //              self_type operator+(difference_type c){
+      //                  self_type it = *this;
+      //                  for(difference_type i = 0; i<c;++i ) ++it; return it; }
+      //              //const pointer operator->() { return ptr_; }
+      //              bool operator==(const self_type& rhs) { return ptr_ == rhs.ptr_; }
+      //              bool operator!=(const self_type& rhs) { return ptr_ != rhs.ptr_; }
+      //          private:
+      //             node *  ptr_;
+      //             multiset<key_type> * father;
+      //      };
 
+      class const_iterator: public iterator {
+      public:
+          const_iterator(node * ptr,multiset<key_type> * f) : iterator(ptr,f){}
+          const key_type& operator*() { return iterator::ptr_->data ; }
+          };
 
 private:
 
@@ -709,6 +722,31 @@ public:
 
               bool operator!=(const multiset<key_type> & m){
                   return ! (*this==m);
+              }
+
+
+              void write_to_stream(std::ostream &  os,std::string delim = ", "){
+                  iterator it = this->begin();
+                  while(it != this->end())
+                      os<<*it++<<delim;
+              }
+
+              void write_to_stream_mid_delim(std::ostream &  os,std::string delim = ", "){
+                  iterator it = this->begin();
+                  while(it != this->end()){
+                      os<<*it++;
+                      if (it+1 != this->end())
+                        os<<delim;
+                      }
+              }
+
+              void read_from_stream(std::istream & is){
+                  while (is) {
+                          key_type t;
+                          is>>t;
+                          this->insert(t);
+                      }
+
               }
 
 
