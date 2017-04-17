@@ -8,7 +8,7 @@ void time_test(int cnt){
    time_t time_passed;
    double res;
    std::set<int> st;
-   multiset<int> mst;
+   deb_multiset<int> mst;
 
    start = clock();
    for(int i = 0; i< cnt;++i){
@@ -26,6 +26,6 @@ void time_test(int cnt){
    mt_res = double(time_passed-start)/CLOCKS_PER_SEC;
 
    std::cout<<"Time test for "<<cnt<<" insertions of rand int"<<std::endl;
-   std::cout<<"Set :"<<res<<" sec."<<'\n'<<"Multiset : "<<mt_res<<" sec. "<<std::endl;
+   std::cout<<"Set :"<<res<<" sec."<<'\n'<<"Multiset : "<<mt_res<<" sec. with "<< mst.left_rotations()+mst.right_rotations()<<" rotations"<<std::endl;
 }
 
