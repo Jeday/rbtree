@@ -521,31 +521,7 @@ public:
              node *  ptr_;
       };
 
-      //      class const_iterator
-      //      {
-      //          public:
-      //              typedef const_iterator self_type;
-      //              typedef key_type& reference;
-      //              typedef node* pointer;
-      //              typedef std::bidirectional_iterator_tag iterator_category;
-      //              typedef size_t difference_type;
 
-      //              const_iterator(node * ptr,multiset<key_type> * f) : ptr_(ptr), father(f) { }
-      //              self_type operator++() { self_type i = *this; ptr_ = father->next(ptr_); return i; }
-      //              self_type operator++(int junk) { ptr_=father->next(ptr_); return *this; }
-      //              self_type operator--() { self_type i = *this; ptr_=father->prev(ptr_); return i; }
-      //              self_type operator--(int junk) { ptr_=father->prev(ptr_); return *this; }
-      //              const key_type& operator*() { return ptr_->data ; }
-      //              self_type operator+(difference_type c){
-      //                  self_type it = *this;
-      //                  for(difference_type i = 0; i<c;++i ) ++it; return it; }
-      //              //const pointer operator->() { return ptr_; }
-      //              bool operator==(const self_type& rhs) { return ptr_ == rhs.ptr_; }
-      //              bool operator!=(const self_type& rhs) { return ptr_ != rhs.ptr_; }
-      //          private:
-      //             node *  ptr_;
-      //             multiset<key_type> * father;
-      //      };
 
       class const_iterator: public iterator {
       public:

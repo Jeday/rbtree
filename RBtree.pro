@@ -7,4 +7,5 @@ SOURCES += main.cpp \
     rb_multi_set.cpp
 
 HEADERS += \
-    rb_multi_set.h
+    rb_multi_set.h \
+    priority_queue.h
