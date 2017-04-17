@@ -754,7 +754,8 @@ public:
     };
 
 
-
+/// time test;
+void time_test(int cnt);
 
 
 #endif // RB_MULTI_SET_H
