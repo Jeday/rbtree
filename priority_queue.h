@@ -156,7 +156,7 @@ public:
         heap_extract_max();
     }
 
-    void push(T&k){
+    void push(const T&k){
         heap_insert(k);
     }
 

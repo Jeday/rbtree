@@ -5,13 +5,15 @@
 #include <iterator> // iterator traits
 #include <ostream> // for stream writting
 #include <string> // for delim
+#include <functional>
 
-
-template<typename key_type>
+template<typename key_type,class _Compare
+         = std::less<T>>
 class multiset{
 protected:
     typedef key_type  value_type;
 
+    _Compare Compare;
     /// color alias
       //const bool BLACK = false;
     //  const bool RED = true;
@@ -109,7 +111,7 @@ protected:
      node* r = root;
      if (r != _NLL)
          while(r != _NLL){
-             if (v<r->data){
+             if (Compare(v,r->data)){
                  if(r->left != _NLL)
                      r = r->left;
                  else {
@@ -476,7 +478,7 @@ protected:
           if(r == nullptr)
               r = root;
           while(r != _NLL){
-              if(r->data< v){
+              if(Compare(r->data, v)){
                   if (r->right != _NLL)
                   r = r->right;
                   else return r;
