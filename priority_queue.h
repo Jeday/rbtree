@@ -19,12 +19,12 @@ class Priority_queue {
       sz_t left = 2*i;
       sz_t right = 2*i+1;
       sz_t largest = i;
-      if (left <= heap_size && A[left] > A[largest])
+      if (left <= heap_size && A[left-1] > A[largest-1])
         largest = left;
-      if (right <= heap_size && A[right] > A[largest])
+      if (right <= heap_size && A[right-1] > A[largest-1])
         largest = right;
       if (largest != i){
-          std::swap(A[i], A[largest]);
+          std::swap(A[i-1], A[largest-1]);
           heapify(largest);
           }
     }
@@ -41,17 +41,19 @@ class Priority_queue {
     void heap_insert(T key){
         heap_size+=1;
         sz_t i = heap_size;
-        while(i>1 && A[i/2]<key){
-                A[i] = A[i/2];
+        A.resize(heap_size);
+        while(i>1 && A[(i)/2-1]<key){
+                A[i-1] = A[i/2-1];
                 i = i/2;
             }
-        A[i] = key;
+       // A.resize(heap_size);
+        A[i-1] = key;
+        heapify(i);
     }
-
     void heap_extract_max(){
         if(heap_size<1)
             return;
-        A[1] = A[heap_size];
+        A[0] = A[heap_size-1];
         heap_size = heap_size -1;
         heapify(1);
     }
@@ -64,7 +66,7 @@ public:
         heap_size = 0;
     }
 
-    T top(){return A[1];}
+    const T& top(){ return A[0];}
 
     void pop(){
         heap_extract_max();
