@@ -5,12 +5,13 @@
 #include <vector>
 #include <algorithm>
 
-std::push_heap(_RandomAccessIterator __first, _RandomAccessIterator __last){}
 
 
-template <class T, class Container = std::vector<T>, class Compare= std::less<typename Container::value_type> > class Priority_queue {
+
+template <class T, class Container = std::vector<T>, class Compare= std::less<typename Container::value_type> >
+class Priority_queue {
     Container A;
-    using sz_t = Container::size_type;
+    typedef typename Container::size_type sz_t;
     sz_t heap_size;
 
 
@@ -30,8 +31,29 @@ template <class T, class Container = std::vector<T>, class Compare= std::less<ty
 
     void build_heap(){
       heap_size = A.size();
-      for(sz_t i = heap_sizep/2; i >= 1; --i)
+      for(sz_t i = heap_size/2; i >= 1; --i)
          heapify(i);
+    }
+
+
+
+
+    void heap_insert(T key){
+        heap_size+=1;
+        sz_t i = heap_size;
+        while(i>1 && A[i/2]<key){
+                A[i] = A[i/2];
+                i = i/2;
+            }
+        A[i] = key;
+    }
+
+    void heap_extract_max(){
+        if(heap_size<1)
+            return;
+        A[1] = A[heap_size];
+        heap_size = heap_size -1;
+        heapify(1);
     }
 
 
@@ -42,7 +64,22 @@ public:
         heap_size = 0;
     }
 
+    T top(){return A[1];}
+
+    void pop(){
+        heap_extract_max();
+    }
+
+    void push(const T&k){
+        heap_insert(k);
+    }
+
+    bool empty(){return heap_size<1;}
+
+
 
     };
+
+void test_pq();
 
 #endif // PRIORITY_QUEUE_H

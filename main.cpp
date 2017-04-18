@@ -1,5 +1,6 @@
 
 #include "rb_multi_set.h"
+#include "priority_queue.h"
 #include <algorithm>
 #include <iostream>
 
