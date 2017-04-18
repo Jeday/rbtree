@@ -2,10 +2,10 @@
 #include "deque"
 #include <iostream>
 
-void test_pq(){
-    fixed_Priority_queue<int> pq(10);
-    fixed_Priority_queue<int> d_pq(10);
-    for(int i = 0; i<100; ++i){
+void test_pq(int d){
+    Priority_queue<int> pq;
+    Priority_queue<int> d_pq;
+    for(int i = 0; i<d; ++i){
             pq.push(i);
             d_pq.push(i);
         }
@@ -17,6 +17,20 @@ void test_pq(){
             pq.pop();
             d_pq.pop();
         }
+
+    std::cout<<std::endl;
+
+    fixed_Priority_queue<int> _pq(20);
+    for(int i = 0; i<d; ++i){
+            _pq.push(i);
+        }
+    while(!_pq.empty()){
+            std::cout<<_pq.top()<<" ";
+            _pq.pop();
+        }
+
+    std::cout<<std::endl;
+
 
 
 }

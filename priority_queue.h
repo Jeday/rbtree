@@ -8,9 +8,13 @@
 
 
 
-template <class T, class Container = std::vector<T>>
+
+
+template <class T, class Container = std::vector<T>,class _Compare
+          = std::less<typename Container::value_type> >
 class Priority_queue {
 protected:
+      _Compare Compare;
     Container A;
     typedef typename Container::size_type sz_t;
     sz_t heap_size;
@@ -20,9 +24,9 @@ protected:
       sz_t left = 2*i;
       sz_t right = 2*i+1;
       sz_t largest = i;
-      if (left <= heap_size && A[left-1] > A[largest-1])
+      if (left <= heap_size && Compare(A[left-1], A[largest-1]))
         largest = left;
-      if (right <= heap_size && A[right-1] > A[largest-1])
+      if (right <= heap_size && Compare(A[right-1], A[largest-1]))
         largest = right;
       if (largest != i){
           std::swap(A[i-1], A[largest-1]);
@@ -43,7 +47,7 @@ protected:
         heap_size+=1;
         sz_t i = heap_size;
         A.resize(heap_size);
-        while(i>1 && A[(i)/2-1]<key){
+        while(i>1 && Compare(A[(i)/2-1],key)){
                 A[i-1] = A[i/2-1];
                 i = i/2;
             }
@@ -82,9 +86,11 @@ public:
 
     };
 
-template <class T>
+template <class T,class _Compare
+          = std::less<T> >
 class fixed_Priority_queue {
 protected:
+    _Compare Compare;
     T *A;
     typedef size_t sz_t;
     sz_t heap_size;
@@ -95,9 +101,9 @@ protected:
       sz_t left = 2*i;
       sz_t right = 2*i+1;
       sz_t largest = i;
-      if (left <= heap_size && A[left-1] > A[largest-1])
+      if (left <= heap_size && Compare( A[left-1], A[largest-1]))
         largest = left;
-      if (right <= heap_size && A[right-1] > A[largest-1])
+      if (right <= heap_size && Compare(A[right-1], A[largest-1]))
         largest = right;
       if (largest != i){
           std::swap(A[i-1], A[largest-1]);
@@ -106,7 +112,7 @@ protected:
     }
 
     void build_heap(){
-      heap_size = A.size();
+      heap_size = max_sz;
       for(sz_t i = heap_size/2; i >= 1; --i)
          heapify(i);
     }
@@ -114,12 +120,12 @@ protected:
 
 
 
-  virtual  void heap_insert(T key){
+  virtual  void heap_insert( const T &key){
         if (heap_size == max_sz)
             return;
         heap_size+=1;
         sz_t i = heap_size;
-        while(i>1 && A[(i)/2-1]<key){
+        while(i>1 && Compare(A[i/2-1],key)){
                 A[i-1] = A[i/2-1];
                 i = i/2;
             }
@@ -150,7 +156,7 @@ public:
         heap_extract_max();
     }
 
-    void push(const T&k){
+    void push(T&k){
         heap_insert(k);
     }
 
@@ -164,6 +170,6 @@ public:
 }
     };
 
-void test_pq();
+void test_pq(int);
 
 #endif // PRIORITY_QUEUE_H

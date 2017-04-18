@@ -6,8 +6,8 @@
 
 int main(int argc, char *argv[])
 {
-  //  for(int d = 1; d<10000000; d*=10) time_test(d);
-    test_pq();
+   for(int d = 1; d<10000000; d*=10) time_test(d);
+   test_pq(100);
 
 
 }
