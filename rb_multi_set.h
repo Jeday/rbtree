@@ -8,10 +8,12 @@
 #include <functional>
 
 template<typename key_type,class _Compare
-         = std::less<T>>
+         = std::less<key_type>>
 class multiset{
 protected:
     typedef key_type  value_type;
+    typedef std::pair<key_type,size_t> pair_type;
+
 
     _Compare Compare;
     /// color alias
@@ -32,13 +34,13 @@ protected:
     */
     class node{
     public:
-        key_type data;
+        pair_type data;
         node * left;
         node * right;
         node * parent;
         bool color;
 
-        node(key_type _data,node * _left = nullptr, node * _right = nullptr,node * _parent = nullptr, bool _color = false):
+        node(pair_type _data,node * _left = nullptr, node * _right = nullptr,node * _parent = nullptr, bool _color = false):
             data(_data),
             left(_left),
            right(_right),
@@ -60,7 +62,7 @@ protected:
 
 public:
     multiset(){
-        _NLL = new node(_NLL);
+        _NLL = new node({value_type(),0});
         _NLL->left= _NLL;
         _NLL->right = _NLL;
         _NLL->parent = _NLL;
@@ -107,26 +109,31 @@ protected:
 
      /// insert value as usual
      virtual void insert_value(const key_type &v){
-        node * n;
-     node* r = root;
+
+         node * n;
+    node*      r = root;
      if (r != _NLL)
          while(r != _NLL){
-             if (Compare(v,r->data)){
+             if (Compare(v,r->data.first)){
                  if(r->left != _NLL)
                      r = r->left;
                  else {
-                     r->left = new node (v,_NLL,_NLL,r,true);
+                     r->left = new node ({v,1},_NLL,_NLL,r,true);
                      n=r->left;
                      r = _NLL;
                  }
 
              }
+             else if (!Compare(r->data.first,v)){
+                     r->data.second+=1;
+                     return;
+                 }
              else
              {
                  if(r->right != _NLL)
                      r = r->right;
                  else {
-                     r->right = new node (v,_NLL,_NLL,r,true);
+                     r->right = new node ({v,1},_NLL,_NLL,r,true);
                      n =r->right;
                      r = _NLL;
                  }
@@ -134,7 +141,7 @@ protected:
              }
          }
        else {
-                root = new node (v,_NLL,_NLL,_NLL,true);
+                root = new node ({v,1},_NLL,_NLL,_NLL,true);
              _NLL->left = root;
              _NLL->right = root;
             n = root;
@@ -478,7 +485,7 @@ protected:
           if(r == nullptr)
               r = root;
           while(r != _NLL){
-              if(Compare(r->data, v)){
+              if(Compare(r->data.first, v)){
                   if (r->right != _NLL)
                   r = r->right;
                   else return r;
@@ -506,21 +513,58 @@ public:
               typedef std::bidirectional_iterator_tag iterator_category;
               typedef size_t difference_type;
 
-              iterator(node * ptr,multiset<key_type> * f) : ptr_(ptr), father(f) { }
-              self_type operator++() { self_type i = *this; ptr_ = father->next(ptr_); return i; }
-              self_type operator++(int junk) { ptr_=father->next(ptr_); return *this; }
-              self_type operator--() { self_type i = *this; ptr_=father->prev(ptr_); return i; }
-              self_type operator--(int junk) { ptr_=father->prev(ptr_); return *this; }
-              key_type operator*() { return ptr_->data; }
+              iterator(node * ptr,multiset<key_type> * f) : ptr_(ptr), father(f), cnt(1) { }
+              self_type operator++() {
+                  if(cnt != ptr_->data.second && ptr_->data.second != 0){
+                      ++cnt;
+                      return this;
+                      }
+                  self_type i = *this;
+                  ptr_ = father->next(ptr_);
+                  cnt = 1;
+                  return i; }
+              self_type operator++(int junk) {
+                  if(cnt != ptr_->data.second && ptr_->data.second != 0){
+                      ++cnt;
+                      return this;
+                      }
+                  ptr_=father->next(ptr_);
+                  cnt = 1;
+                  return *this;
+              }
+              self_type operator--() {
+                  if(ptr_->data.second > 1){
+                      --cnt;
+                      return this;
+                      }
+                  self_type i = *this;
+                  ptr_=father->prev(ptr_);
+                  cnt = 1;
+                  return i;
+              }
+              self_type operator--(int junk) {
+                  if(ptr_->data.second > 1 && cnt !=1){
+                      --cnt;
+                      return this;
+                      }
+                  ptr_=father->prev(ptr_);
+                  cnt = 1;
+                  return *this;
+              }
+              key_type operator*() { return ptr_->data.first; }
               self_type operator+(difference_type c){
                   self_type it = *this;
                   for(difference_type i = 0; i<c;++i ) ++it; return it; }
               //pointer operator->() { return ptr_; }
               bool operator==(const self_type& rhs) { return ptr_ == rhs.ptr_; }
               bool operator!=(const self_type& rhs) { return ptr_ != rhs.ptr_; }
-          protected:
+              difference_type count() const {
+                  return ptr_->data.second;
+              }
+      protected:
              multiset<key_type> * father;
              node *  ptr_;
+             size_t cnt;
       };
 
 
@@ -536,8 +580,9 @@ private:
       size_t delete_value(key_type&  v){
           node * r = find_node(v);
           if (r != _NLL){
-              delete_one_child(r);
-              return 1+delete_value(v);
+              size_t t = r->data.second;
+                  delete_one_child(r);
+              return t;
           }
           else
           {return 0;}
@@ -640,17 +685,8 @@ public:
                   return iterator(find_node(v,nullptr));
               }
 
-              size_t count(const key_type&v) const {
-                  iterator it = find(v);
-                  size_t c = 0;
-                  while(it != this->end()){
-                      ++c;
-                      iterator t = it+1;
-                      if(t == _NLL || *t != *it)
-                          return c;
-                      }
-                  return c; // c is 0;
-
+              size_t count(const key_type&v)  {
+                  return find_node(v)->data.second;
               }
 
               size_t erase(const key_type& v){
@@ -726,6 +762,8 @@ public:
                       }
 
               }
+
+
 
 
 
