@@ -13,7 +13,7 @@
 template <class T, class Container = std::vector<T>,class _Compare
           = std::less<typename Container::value_type> >
 class Priority_queue {
-protected:
+public:
       _Compare Compare;
     Container A;
     typedef typename Container::size_type sz_t;
@@ -60,6 +60,7 @@ protected:
             return;
         A[0] = A[heap_size-1];
         heap_size = heap_size -1;
+        build_heap();
         heapify(1);
     }
 
@@ -89,7 +90,7 @@ public:
 template <class T,class _Compare
           = std::less<T> >
 class fixed_Priority_queue {
-protected:
+public:
     _Compare Compare;
     T *A;
     typedef size_t sz_t;

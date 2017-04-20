@@ -24,6 +24,7 @@ void test_pq(int d){
     for(int i = 0; i<d; ++i){
             _pq.push(i);
         }
+    pq.build_heap();
     while(!_pq.empty()){
             std::cout<<_pq.top()<<" ";
             _pq.pop();
