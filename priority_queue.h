@@ -13,7 +13,7 @@
 template <class T, class Container = std::vector<T>,class _Compare
           = std::less<typename Container::value_type> >
 class Priority_queue {
-public:
+private:
       _Compare Compare;
     Container A;
     typedef typename Container::size_type sz_t;
@@ -24,12 +24,12 @@ public:
       sz_t left = 2*i;
       sz_t right = 2*i+1;
       sz_t largest = i;
-      if (left <= heap_size && Compare(A[left-1], A[largest-1]))
+      if (left <= heap_size && Compare(A[left], A[largest]))
         largest = left;
-      if (right <= heap_size && Compare(A[right-1], A[largest-1]))
+      if (right <= heap_size && Compare(A[right], A[largest]))
         largest = right;
       if (largest != i){
-          std::swap(A[i-1], A[largest-1]);
+          std::swap(A[i], A[largest]);
           heapify(largest);
           }
     }
@@ -46,19 +46,19 @@ public:
   virtual  void heap_insert(T key){
         heap_size+=1;
         sz_t i = heap_size;
-        A.resize(heap_size);
-        while(i>1 && Compare(A[(i)/2-1],key)){
-                A[i-1] = A[i/2-1];
+        A.resize(heap_size+1);
+        while(i>1 && Compare(A[(i)/2],key)){
+                A[i] = A[i/2];
                 i = i/2;
             }
        // A.resize(heap_size);
-        A[i-1] = key;
+        A[i] = key;
         heapify(i);
     }
     void heap_extract_max(){
         if(heap_size<1)
             return;
-        A[0] = A[heap_size-1];
+        A[1] = A[heap_size];
         heap_size = heap_size -1;
         build_heap();
         heapify(1);
@@ -70,9 +70,10 @@ public:
     Priority_queue(){
         A = Container();
         heap_size = 0;
+        A.resize(heap_size+1);
     }
 
-    const T& top(){ return A[0];}
+    const T& top(){ return A[1];}
 
     void pop(){
         heap_extract_max();
@@ -80,6 +81,10 @@ public:
 
     void push(const T&k){
         heap_insert(k);
+    }
+
+    void sort(){
+        build_heap();
     }
 
     bool empty(){return heap_size<1;}
@@ -102,12 +107,12 @@ public:
       sz_t left = 2*i;
       sz_t right = 2*i+1;
       sz_t largest = i;
-      if (left <= heap_size && Compare( A[left-1], A[largest-1]))
+      if (left <= heap_size && Compare( A[left], A[largest]))
         largest = left;
-      if (right <= heap_size && Compare(A[right-1], A[largest-1]))
+      if (right <= heap_size && Compare(A[right], A[largest]))
         largest = right;
       if (largest != i){
-          std::swap(A[i-1], A[largest-1]);
+          std::swap(A[i], A[largest]);
           heapify(largest);
           }
     }
@@ -126,18 +131,18 @@ public:
             return;
         heap_size+=1;
         sz_t i = heap_size;
-        while(i>1 && Compare(A[i/2-1],key)){
-                A[i-1] = A[i/2-1];
+        while(i>1 && Compare(A[i/2],key)){
+                A[i] = A[i/2];
                 i = i/2;
             }
        // A.resize(heap_size);
-        A[i-1] = key;
+        A[i] = key;
         heapify(i);
     }
     void heap_extract_max(){
         if(heap_size<1)
             return;
-        A[0] = A[heap_size-1];
+        A[1] = A[heap_size-1];
         heap_size = heap_size -1;
         heapify(1);
     }
@@ -147,11 +152,11 @@ public:
 public:
     fixed_Priority_queue(size_t mx){
         max_sz = mx;
-        A = new T[mx];
+        A = new T[mx+1];
         heap_size = 0;
     }
 
-    const T& top(){ return A[0];}
+    const T& top(){ return A[1];}
 
     void pop(){
         heap_extract_max();
@@ -163,7 +168,9 @@ public:
 
     bool empty(){return heap_size<1;}
 
-
+    void sort(){
+        build_heap();
+    }
 
 
     ~fixed_Priority_queue(){

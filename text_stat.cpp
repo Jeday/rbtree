@@ -4,7 +4,7 @@
 class comp{
     public:
     bool operator()(const std::pair<int,std::string>& t,const std::pair<int,std::string>& t2){
-        return t.first<t2.first;
+        return t.first>t2.first;
     }
 };
 
@@ -33,6 +33,7 @@ void stat_book(std::string path){
             it = book.begin();
         }
 
+    pq.sort();
     std::ofstream output;
     output.open("/home/je_day/Documents/rbtree/log.txt");
     if (output.is_open())
