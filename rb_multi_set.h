@@ -687,8 +687,8 @@ public:
                   insert_value(v);
               }
 
-              iterator find(const key_type&v) const{
-                  return iterator(find_node(v,nullptr));
+              iterator find( key_type&v) {
+                  return iterator(find_node(v,nullptr),this);
               }
 
               size_t count(const key_type&v)  {

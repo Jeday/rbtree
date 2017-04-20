@@ -59,8 +59,8 @@ private:
         if(heap_size<1)
             return;
         A[1] = A[heap_size];
-        heap_size = heap_size -1;
-        build_heap();
+       --heap_size;
+        //build_heap();
         heapify(1);
     }
 
@@ -87,7 +87,7 @@ public:
         build_heap();
     }
 
-    bool empty(){return heap_size<1;}
+    bool empty(){return heap_size < 1;}
 
 
     };

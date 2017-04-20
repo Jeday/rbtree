@@ -32,13 +32,19 @@ void stat_book(std::string path){
             book.erase(*it);
             it = book.begin();
         }
-
+    //std::string rng = "ring";
+    //std::cout<< book.find(rng).count();
     pq.sort();
     std::ofstream output;
     output.open("/home/je_day/Documents/rbtree/log.txt");
-    if (true)
-        for(int i = 0;i<20;++i){
+    if (output.is_open())
+        output<<"Top words used in "+path<<std::endl;
+        int cnt = 1;
+        while(!pq.empty()){
+            cnt++;
             output<<pq.top().second<<'\t'<<pq.top().first<<"\n";
+            if (cnt % 100 == 0)
+                std::cout<<cnt<<" words written"<<std::endl;
             pq.pop();
         }
 
