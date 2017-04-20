@@ -14,7 +14,7 @@ void stat_book(std::string path){
     file.open(path);
     if(!file.is_open())
      return;
-    QRegExp rx("(\\r|\\ |\\,|\\.|\\:|\\t|\\(|\\)|\\{|\\}|\s+)");
+    QRegExp rx("(\\s|\\,|\\.|\\:|\\t|\\(|\\)|\\{|\\})");
     std::string line;
     while (std::getline(file,line)) {
            QStringList list;
@@ -36,9 +36,8 @@ void stat_book(std::string path){
     pq.sort();
     std::ofstream output;
     output.open("/home/je_day/Documents/rbtree/log.txt");
-    if (output.is_open())
+    if (true)
         for(int i = 0;i<20;++i){
-            std::cout<<"h";
             output<<pq.top().second<<'\t'<<pq.top().first<<"\n";
             pq.pop();
         }
