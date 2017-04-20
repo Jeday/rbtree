@@ -1,14 +1,50 @@
 #include "text_stat.h"
 
 
-/// comparator for string and counter
 class comp{
-typedef std::pair<std::string,unsigned long> pr;
-public:
-    bool operator()(pr t, pr t1){
-        return t<t1;
+    public:
+    bool operator()(const std::pair<int,std::string>& t,const std::pair<int,std::string>& t2){
+        return t.first<t2.first;
     }
 };
+
+void stat_book(std::string path){
+    std::ifstream file;
+    multiset<std::string> book;
+    file.open(path);
+    if(!file.is_open())
+     return;
+    QRegExp rx("(\\r|\\ |\\,|\\.|\\:|\\t|\\(|\\)|\\{|\\}|\s+)");
+    std::string line;
+    while (std::getline(file,line)) {
+           QStringList list;
+           list = QString::fromStdString(line).split(rx,QString::SkipEmptyParts);
+           foreach (QString s, list) {
+                    book.insert(s.toLower().toStdString());
+               }
+        }
+
+    Priority_queue<std::pair<int,std::string>,std::vector<std::pair<int,std::string>>,comp> pq;
+    auto it =book.begin();
+
+    while (it!=book.end()) {
+            pq.push({it.count(),*it});
+            book.erase(*it);
+            it = book.begin();
+        }
+
+    std::ofstream output;
+    output.open("/home/je_day/Documents/rbtree/log.txt");
+    if (output.is_open())
+        for(int i = 0;i<20;++i){
+            std::cout<<"h";
+            output<<pq.top().second<<'\t'<<pq.top().first<<"\n";
+            pq.pop();
+        }
+
+}
+
+
 
 
 

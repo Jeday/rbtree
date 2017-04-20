@@ -364,28 +364,34 @@ protected:
       }
 
 
+
+
+
       void  delete_one_child( node *n)
       {
-          if (n == root)
-            set_root(n->left);
-            while(swap_left(n)){}
-            root->parent= _NLL;
-
-           node *child;
-           if (is_leaf(n->right)){
-               child = n->left;
-               swap_left(n);
-           }
-           else {
-               child = n->right;
-               swap_right(n);
-           }
-          if (n->color == false) {
-              if (child->color == true)
-                  child->color = false;
-              else
-                  delete_case1(child);
-          }
+          node * y;
+          if (n->left == _NLL || n->right == _NLL)
+              y = n;
+          else
+              y = next(n);
+          node * x;
+          if(y->left != _NLL)
+              x = y->left;
+          else
+              x = y->right;
+          x->parent = y->parent;
+          if(y->parent == _NLL)
+              set_root(x);
+          else {
+                  if(y == y->parent->left)
+                      y->parent->left = x;
+                  else
+                      y->parent->right = x;
+              }
+          if(y!=n)
+              n->data = y->data;
+          if (y->color == false)
+              delete_case1(x);
           free(n);
       }
 
@@ -517,7 +523,7 @@ public:
               self_type operator++() {
                   if(cnt != ptr_->data.second && ptr_->data.second != 0){
                       ++cnt;
-                      return this;
+                      return *this;
                       }
                   self_type i = *this;
                   ptr_ = father->next(ptr_);
@@ -526,7 +532,7 @@ public:
               self_type operator++(int junk) {
                   if(cnt != ptr_->data.second && ptr_->data.second != 0){
                       ++cnt;
-                      return this;
+                      return *this;
                       }
                   ptr_=father->next(ptr_);
                   cnt = 1;
@@ -535,7 +541,7 @@ public:
               self_type operator--() {
                   if(ptr_->data.second > 1){
                       --cnt;
-                      return this;
+                      return *this;
                       }
                   self_type i = *this;
                   ptr_=father->prev(ptr_);
@@ -545,7 +551,7 @@ public:
               self_type operator--(int junk) {
                   if(ptr_->data.second > 1 && cnt !=1){
                       --cnt;
-                      return this;
+                      return *this;
                       }
                   ptr_=father->prev(ptr_);
                   cnt = 1;
@@ -577,7 +583,7 @@ public:
 
 private:
 
-      size_t delete_value(key_type&  v){
+      size_t delete_value(const key_type&  v){
           node * r = find_node(v);
           if (r != _NLL){
               size_t t = r->data.second;
@@ -689,7 +695,7 @@ public:
                   return find_node(v)->data.second;
               }
 
-              size_t erase(const key_type& v){
+              size_t erase( const key_type& v){
                   return delete_value(v);
               }
 

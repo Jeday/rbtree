@@ -1,7 +1,8 @@
 TEMPLATE = app
 CONFIG += console c++11
 CONFIG -= app_bundle
-CONFIG -= qt
+#CONFIG -= qt
+QT += core
 
 
 SOURCES += main.cpp \
@@ -13,3 +14,6 @@ HEADERS += \
     rb_multi_set.h \
     priority_queue.h \
     text_stat.h
+
+DISTFILES += \
+    lotr.txt
