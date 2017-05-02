@@ -14,5 +14,6 @@
 #include <QStringList>
 
 void stat_book(std::string path);
+void name_stat_book(std::string path);
 
 #endif // TEXT_STAT_H

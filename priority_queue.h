@@ -83,9 +83,6 @@ public:
         heap_insert(k);
     }
 
-    void sort(){
-        build_heap();
-    }
 
     bool empty(){return heap_size < 1;}
 
@@ -168,9 +165,7 @@ public:
 
     bool empty(){return heap_size<1;}
 
-    void sort(){
-        build_heap();
-    }
+
 
 
     ~fixed_Priority_queue(){

@@ -687,7 +687,7 @@ public:
                   insert_value(v);
               }
 
-              iterator find( key_type&v) {
+              iterator find(const  key_type&v) {
                   return iterator(find_node(v,nullptr),this);
               }
 
