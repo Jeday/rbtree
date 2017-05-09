@@ -488,21 +488,14 @@ protected:
 
 
       node *find_node(const value_type  &  v, node * r = nullptr) const  {
-          if(r == nullptr)
-              r = root;
-          while(r != _NLL){
-              if(Compare(r->data.first, v)){
-                  if (r->right != _NLL)
-                  r = r->right;
-                  else return r;
-              }
-              else {
-                 if (r->left != _NLL)
-                  r = r->left;
-                 else return r;
-              }
-          }
-          return _NLL;
+          if (r == _NLL)
+              return _NLL;
+          if (Compare(v,r->data.first))
+              return find_node(v,r->left);
+          else if (Compare(r->data.first,v))
+              return find_node(v,r->right);
+          else
+              return r;
       }
 
 
