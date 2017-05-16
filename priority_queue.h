@@ -40,27 +40,36 @@ private:
          heapify(i);
     }
 
+    int parent(int i){ return i/2;}
+
+    int left(int i){ return 2*i;}
+
+    int right(int i){ return 2*i+1;}
 
 
 
   virtual  void heap_insert(T key){
         heap_size+=1;
         sz_t i = heap_size;
-        A.resize(heap_size+1);
-        while(i>1 && Compare(A[(i)/2],key)){
-                A[i] = A[i/2];
-                i = i/2;
+        A.push_back(key);
+        inc_key(heap_size,key);
+
+    }
+    void inc_key(int i, T key){
+        if (key>=A[i]){
+            A[i] = key;
+            while (i>1 && A[parent(i)]<A[i]){
+                std::swap(A[i],A[parent(i)]);
+                i = parent(i);
             }
-       // A.resize(heap_size);
-        A[i] = key;
-        heapify(i);
+        }
     }
     void heap_extract_max(){
         if(heap_size<1)
             return;
         A[1] = A[heap_size];
+        A.pop_back();
        --heap_size;
-        //build_heap();
         heapify(1);
     }
 
@@ -134,7 +143,6 @@ public:
             }
        // A.resize(heap_size);
         A[i] = key;
-        heapify(i);
     }
     void heap_extract_max(){
         if(heap_size<1)

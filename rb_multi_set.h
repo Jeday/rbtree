@@ -6,7 +6,8 @@
 #include <ostream> // for stream writting
 #include <string> // for delim
 #include <functional>
-
+#include <iomanip>
+#include <iostream>
 template<typename key_type,class _Compare
          = std::less<key_type>>
 class multiset{
@@ -487,7 +488,7 @@ protected:
       }
 
 
-      node *find_node(const value_type  &  v, node * r = nullptr) const  {
+      node *find_node(const value_type  &  v, node * r) const  {
           if (r == _NLL)
               return _NLL;
           if (Compare(v,r->data.first))
@@ -506,7 +507,8 @@ public:
       class iterator
       {
           public:
-              typedef iterator self_type;
+             typedef key_type value_type;
+             typedef iterator self_type;
               typedef key_type& reference;
               typedef node* pointer;
               typedef std::bidirectional_iterator_tag iterator_category;
@@ -577,7 +579,7 @@ public:
 private:
 
       size_t delete_value(const key_type&  v){
-          node * r = find_node(v);
+          node * r = find_node(v,root);
           if (r != _NLL){
               size_t t = r->data.second;
                   delete_one_child(r);
@@ -585,6 +587,24 @@ private:
           }
           else
           {return 0;}
+      }
+
+      postorder(node* p, int indent = 0)
+      {
+          if(p != _NLL) {
+              if(p->right) {
+                  postorder(p->right, indent+4);
+              }
+              if (indent) {
+                  std::cout << std::setw(indent) << ' ';
+              }
+              if (p->right) std::cout<<" /\n" << std::setw(indent) << ' ';
+              std::cout<< p->data.first << "\n ";
+              if(p->left) {
+                  std::cout << std::setw(indent) << ' ' <<" \\\n";
+                  postorder(p->left, indent+4);
+              }
+          }
       }
 
 public:
@@ -618,7 +638,7 @@ public:
 
               iterator lower_bound(key_type v){
                   node * r = root;
-                  node * f = find_node({v,v});
+                  node * f = find_node({v,v},root);
                   if (f != _NLL)
                      return iterator(f);
                   else {
@@ -646,7 +666,7 @@ public:
 
               iterator upper_bound(key_type v){
                   node * r = root;
-                  node * f = find_node({v,v});
+                  node * f = find_node({v,v},root);
                   if (f != _NLL){
                           while(f->data == v)
                               f = next(f);
@@ -681,11 +701,11 @@ public:
               }
 
               iterator find(const  key_type&v) {
-                  return iterator(find_node(v,nullptr),this);
+                  return iterator(find_node(v,root),this);
               }
 
               size_t count(const key_type&v)  {
-                  return find_node(v)->data.second;
+                  return find_node(v,root)->data.second;
               }
 
               size_t erase( const key_type& v){
@@ -763,6 +783,10 @@ public:
               }
 
 
+            void side_print(){
+                postorder(root);
+            }
+
 
 
 
@@ -802,6 +826,7 @@ public:
         rotate_left_cnt = 0;
         rotate_right_cnt = 0;
     }
+
 
 
     };
